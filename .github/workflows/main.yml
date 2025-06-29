@@ -30,11 +30,17 @@ jobs:
         
     - name: Commit and push changes
       run: |
-        # 不需要手动设置 user.email 和 user.name，因为 GITHUB_TOKEN 会提供默认身份
+        # 设置 Git 用户身份为 GitHub Actions 机器人，用于提交信息
+        # 这样提交历史会显示为 'github-actions[bot]'
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
+        
+        # 检查是否有需要提交的更改
         if [ -n "$(git status --porcelain)" ]; then
           git add ip.txt
           git commit -m "Automatic update"
           # 使用 GITHUB_TOKEN 进行认证推送
+          # GITHUB_TOKEN 是 GitHub Actions 内置的 Secret，无需手动设置
           git push https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
         else
           echo "No changes detected, skipping commit."
