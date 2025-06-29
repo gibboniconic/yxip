@@ -30,11 +30,12 @@ jobs:
         
     - name: Commit and push changes
       run: |
-        # 已删除 git config user.email 和 user.name 行
+        # 不需要手动设置 user.email 和 user.name，因为 GITHUB_TOKEN 会提供默认身份
         if [ -n "$(git status --porcelain)" ]; then
           git add ip.txt
           git commit -m "Automatic update"
-          git push
+          # 使用 GITHUB_TOKEN 进行认证推送
+          git push https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
         else
           echo "No changes detected, skipping commit."
         fi
